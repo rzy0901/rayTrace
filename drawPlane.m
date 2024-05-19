@@ -1,4 +1,4 @@
-function drawPlane(a,b,c,d,x_bounds,y_bounds,z_bounds,points)
+function drawPlane(a,b,c,d,x_bounds,y_bounds,z_bounds)
 
 % Name:         drawPlane
 % Version:      1.0
@@ -9,6 +9,7 @@ function drawPlane(a,b,c,d,x_bounds,y_bounds,z_bounds,points)
 %               XYZ_bounds: [minimum_bound maximum_bound] of XYZ direction
 % Outputs:      3D plot of plane
 
+points = 40;
 values = find([a,b,c,d]~=0);
 values = mat2str(values);
 
