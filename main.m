@@ -1,44 +1,34 @@
-% Close all open figure windows:
-close all
-% Remove existing variables from memory:
-clear
-% Refresh command window:
-clc
-constants
-parameters
-%% Static part
-environment(1) % figure(1)
-source
-modulator
-transmitter
-channel
-relay
-% channel
-receiver
-sink
+close all; clear; clc;
+%% static part
+simulation_static
+%% dynamic part
+figure;
 pic_num = 1;
-% set (gcf,'Position',[100,250,1000,600],'color','w');
-set(gcf,'Units','normalized','OuterPosition',[0 0 1 1],'color','w');
-
-axis equal;
-% view(2)
-  xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)');
-view(5,45)
-% view(30,30)
-% set(gca,'xtick',[],'xticklabel',[],'ytick',[],'yticklabel',[],'ztick',[],'zticklabel',[]);
-% axis off;
-
-%% Dynamic part, load the determinstic rays calculated before.
-%% One person
-figure(2);
-set (gcf,'Position',[100,250,1000,600],'color','w');
-% set (gcf,'color','w');
-for kk = 1:1:40% kk = 1: 1: 40
-    environment(2) % figure(2)
+for kk = 1:1:40
+    % Plot environment
+    for i = 1:obstacle_number
+    A = object_geometry(i,1);
+    B = object_geometry(i,2);
+    C = object_geometry(i,3);
+    D = -(A*object_geometry(i,4)+B*object_geometry(i,5)+C*object_geometry(i,6));
+    x_min = object_geometry(i,7);
+    x_max = object_geometry(i,8);
+    y_min = object_geometry(i,9);
+    y_max = object_geometry(i,10);
+    z_min = object_geometry(i,11);
+    z_max = object_geometry(i,12);
+    drawPlane(A,B,C,D,[x_min,x_max],[y_min,y_max],[z_min,z_max])
+    hold on;
+    end
+    view(5,45)
 %     view(2)
-    view(5,45);
-    xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)');
-    %% Walking
+    floor = imread('Floor Texture.jpg');
+    image([0 6],[0 6],floor);
+    lgd_tx = plot3(transmit_pos(1),transmit_pos(2),transmit_pos(3),'x','MarkerSize',16,'LineWidth',3,'Color',blue);
+    hold on;
+    lgd_rx = plot3(receive_pos(1),receive_pos(2),receive_pos(3),'x','MarkerSize',16,'LineWidth',3,'Color',green);
+
+    % Plot human
     angstep = 0;
     [pos_ped, vel_ped, ax_ped] = move(ped,dt,angstep);
     % 16 joint points
@@ -58,58 +48,47 @@ for kk = 1:1:40% kk = 1: 1: 40
     plot3(x1([7,8]),y1([7,8]),z1([7,8]),'Color','r','LineWidth',lw);
     plot3(x1([13,14]),y1([13,14]),z1([13,14]),'Color','r','LineWidth',lw);
     plot3(x1([15,16]),y1([15,16]),z1([15,16]),'Color','r','LineWidth',lw);
-    plot3([x1(15),(x1(7)+x1(8))/2],[y1(15),(y1(7)+y1(8))/2],[z1(15),(z1(7)+z1(8))/2],'Color','r','LineWidth',lw);
-    % Plot rays reflected by humans
+    plot3([x1(15),(x1(7)+x1(8))/2],[y1(15),(y1(7)+y1(8))/2],[z1(15),(z1(7)+z1(8))/2],'Color',red,'LineWidth',lw);
+    % Plot rays scattered by humans
     for ii = 1:1:16
         plot3([transmit_pos(1) x1(ii) receive_pos(1)],[transmit_pos(2) y1(ii) receive_pos(2)],[transmit_pos(3) z1(ii) receive_pos(3)],...
-            'Color','r','LineWidth',0.05);
+            'Color',red,'LineWidth',0.05);
     end
-    % Plot deterministic rays
-%     for ii = 1 :1 : length(start_points)
-% %         flag1 = 0; % 判断径是否相交
-% %         for jj = 1:1:16
-% %             % flag1 = isintersected(start_points(ii,:),end_points(ii,:),transmit_pos,pos_ped(:,jj).') || flag1;
-% %             flag1 = isintersected(start_points(ii,:),end_points(ii,:),receive_pos,pos_ped(:,jj).') || flag1;
-% %         end
-% %         if flag1 == 0
-% %             drawRay(start_points(ii,:),end_points(ii,:),ray_resolution);
-% %         end
-%         drawRay(start_points(ii,:),end_points(ii,:),ray_resolution);
-%     end
-    % Plot deterministic rays version 2 
-    for ii = 1:1:length(ray_connections) % 遍历多径
+    for ii = 1:1:length(ray_connections) 
         flag1 = 0;
         connections = ray_connections{ii};
-        for jj =1:1:size(connections,1) % 检测相交
+        for jj =1:1:size(connections,1)
             B = connections(jj,1:3);
             C = connections(jj,4:6);
             for m=1:size(x1,1)
                 A = [x1(m) y1(m) z1(m)];
                 distance = pointToLineDistance(A,B,C);
-                if distance <= 0.2
+                if distance <= 0.4
                     flag1 = 1;
                 end
             end
         end
         if flag1 == 0
             if size(connections,1) == 1
-                LoS = plot3([connections(1) connections(4)],[connections(2) connections(5)],[connections(3) connections(6)],'Color','y','LineWidth',2);
+                LoS = plot3([connections(1) connections(4)],[connections(2) connections(5)],[connections(3) connections(6)],'Color',yellow,'LineWidth',2);
             else
                 for jj = 1:1:size(connections,1)
-                    NLoS = plot3([connections(jj,1) connections(jj,4)],[connections(jj,2) connections(jj,5)],[connections(jj,3) connections(jj,6)],'Color','b','LineWidth',0.005);
+                    NLoS = plot3([connections(jj,1) connections(jj,4)],[connections(jj,2) connections(jj,5)],[connections(jj,3) connections(jj,6)],'Color',blue,'LineWidth',0.5);
                 end
             end
         end
     end
     xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)');
-%     set (gcf,'Position',[100,250,1000,600],'color','w');
-set(gcf,'Units','normalized','OuterPosition',[0 0 1 1],'color','w');
+%     set(gcf,'Units','normalized','OuterPosition',[0 0 1 1],'color','w');
+    set(gcf, 'Color', 'w');
     hold off
-    % legend('Transmitter','Receiver','Relay');
-    hold off;
-%     set(gca,'xtick',[],'xticklabel',[],'ytick',[],'yticklabel',[],'ztick',[],'zticklabel',[]);
-%     axis equal;
-    axis off;
+    axis equal
+    try
+        legend([lgd_tx, lgd_rx, LoS, NLoS],'Tx','Rx', 'LoS', 'NLoS');
+    catch err
+        legend([lgd_tx, lgd_rx, NLoS],'Tx','Rx', 'NLoS');
+    end
+%     axis off;
     drawnow;
     Frame=getframe(gcf);
     Image=frame2im(Frame);
