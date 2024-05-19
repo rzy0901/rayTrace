@@ -72,11 +72,11 @@ end
 floor = imread('Floor Texture.jpg');
 image([0 6],[0 6],floor);
 view(5,45)
-lgd_tx = plot3(transmit_pos(1),transmit_pos(2),transmit_pos(3),'*','MarkerSize',16,'LineWidth',3,'Color',blue);
+lgd_tx = plot3(transmit_pos(1),transmit_pos(2),transmit_pos(3),'x','MarkerSize',16,'LineWidth',3,'Color',blue);
 xlabel('X (m)')
 ylabel('Y (m)')
 zlabel(' (m)')
-lgd_rx = plot3(receive_pos(1),receive_pos(2),receive_pos(3),'*','MarkerSize',16,'LineWidth',3,'Color',green);
+lgd_rx = plot3(receive_pos(1),receive_pos(2),receive_pos(3),'x','MarkerSize',16,'LineWidth',3,'Color',green);
 %% Source
 % Create binary message.
 for i = 1:message_length
