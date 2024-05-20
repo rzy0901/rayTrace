@@ -415,6 +415,7 @@ clear new_ray_connections;
 % Update path information matrix:
 path_matrix(:,2) = path_matrix(:,1)/light_speed; % delay
 path_matrix(:,3) = (light_speed/(frequency_carrier*sqrt(4*pi)))./path_matrix(:,1); % attenuation for free space model. eq (10) of https://ieeexplore.ieee.org/document/10525191
+% path_matrix(:,4) attenuation due to collisions
 path_matrix(:,5) = exp((-1j*2*pi*frequency_carrier/light_speed).*path_matrix(:,1)); % phase change
 % Get number of valid paths:
 [paths_valid,~] = size(path_matrix);
