@@ -110,7 +110,7 @@ for kk = 1:1:40
     ylim([-70 0]);
     title('Power delay profile')
     xlabel('Time (ns)')
-    ylabel('Attenuation powr level (dB)')
+    ylabel('Attenuation power level (dB)')
 %     set(gcf,'Units','normalized','OuterPosition',[0 0 1 1],'color','w');
     set(gcf,'Units','normalized','OuterPosition',[0.0566 0.1757 0.9137 0.6215],'color','w');
 %     set(gcf, 'Color', 'w');
